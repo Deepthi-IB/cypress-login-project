@@ -10,28 +10,32 @@ jobs:
   cypress-run:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install dependencies
+      - name: Install
         run: npm ci
 
       - name: Run Cypress Tests
-        uses: cypress-io/github-action@v6
-        with:
-          browser: chrome
-          spec: cypress/e2e/**/*.cy.js
-        env:
-          CYPRESS_baseUrl: https://reqres.in
+        run: npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/reports,overwrite=false,html=false,json=true
 
-      - name: Upload Test Results
+      - name: Merge Reports
+        run: |
+          npx mochawesome-merge cypress/reports/*.json > cypress/reports/report.json
+          npx marge cypress/reports/report.json -f report -o cypress/reports
+
+      - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-screenshots
-          path: cypress/screenshots
+          name: cypress-html-report
+          path: cypress/reports/report.html
+
+      - name: Upload Videos/Screenshots on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: |
+            cypress/videos
+            cypress/screenshots
