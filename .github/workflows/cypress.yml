@@ -8,20 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Install
         run: npm ci
+        
       - name: Run Tests
         run: npx cypress run
 
-      - name: Generate HTML Report
-        if: always()
-        run: |
-          npx mochawesome-merge cypress/reports/*.json > cypress/reports/combined.json
-          npx marge cypress/reports/combined.json -o cypress/reports --inline -f report
-
-      - name: Upload Report
+      - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-html-report
-          path: cypress/reports/report.html
+          path: cypress/reports/
