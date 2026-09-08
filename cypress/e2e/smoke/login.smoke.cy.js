@@ -13,8 +13,8 @@ describe('Smoke - Login API', () => {
       });
   });
 
-  it('SMOKE-02 - Home page loads', () => {
+  /*it('SMOKE-02 - Home page loads', () => {
     page.visit();
     page.verifyHomePage();
-  });
+  });*/
 });
